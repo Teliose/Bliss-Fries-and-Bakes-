@@ -1,0 +1,390 @@
+/* Google Fonts Import */
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display+SC:ital,wght@0,400;0,700;0,900;1,400;1,700;1,900&display=swap');
+
+/* CSS Variables / Design System */
+:root {
+    --color-bg: #fff2ec;
+    /* Warm Cream/Beige */
+    --color-bg-white: #FFFFFF;
+    /* Pure White for gallery background transition */
+    --color-primary: #C1272D;
+    ;
+    /* Deep Crimson Red */
+    --color-primary-hover: #8F1418;
+    --color-text-dark: #1A1D20;
+    /* Charcoal/Navy Black */
+    --color-text-muted: #5C6266;
+    /* Soft Grey-Charcoal */
+    --color-border: #E8E0D7;
+    /* Subtle separator color */
+
+    --font-heading: "Playfair Display SC", serif;
+    --font-body: 'Inter', sans-serif;
+
+    --transition-fast: 0.2s ease;
+    --transition-normal: 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    /* Smooth modern ease-out */
+}
+
+/* Global Reset & Base Styling */
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html {
+    scroll-behavior: smooth;
+    overflow-x: hidden;
+    /* Prevents overflow from the horizontal image gallery */
+}
+
+body {
+    background-color: var(--color-bg);
+    color: var(--color-text-dark);
+    font-family: var(--font-body);
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+}
+
+/* Header Section */
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    height: auto;
+    padding: 1.5rem 5%;
+    background-color: transparent;
+    position: relative;
+    z-index: 100;
+}
+
+/* Logo Design */
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    color: var(--color-text-dark);
+    cursor: pointer;
+}
+
+
+/* Navigation Menu */
+.nav {
+    display: flex;
+    align-items: center;
+    margin-left: auto;
+    /* Explicit flex constraint: pushes nav links to the far right */
+    height: auto;
+}
+
+.nav-links {
+    display: flex;
+    list-style: none;
+    gap: 1.5rem;
+    height: auto;
+}
+
+.nav-link {
+    font-family: var(--font-body);
+    font-weight: 500;
+    font-size: 1rem;
+    /* Standard text in rem */
+    color: var(--color-text-dark);
+    text-decoration: none;
+    position: relative;
+    padding: 0.5rem 0;
+    transition: color var(--transition-fast);
+}
+
+.nav-link::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background-color: var(--color-primary);
+    transition: width var(--transition-normal);
+}
+
+.nav-link:hover {
+    color: var(--color-primary);
+}
+
+.nav-link:hover::after {
+    width: 100%;
+}
+
+/* Shopping Cart Badge */
+.cart-container {
+    margin-left: 2.5rem;
+    display: flex;
+    align-items: center;
+    height: auto;
+}
+
+.cart-button {
+    color: var(--color-text-dark);
+    text-decoration: none;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: color var(--transition-fast);
+}
+
+.cart-icon {
+    transition: transform var(--transition-normal);
+}
+
+.cart-badge {
+    position: absolute;
+    top: -0.35rem;
+    right: -0.5rem;
+    background-color: var(--color-primary);
+    color: var(--color-text-light);
+    font-size: 0.75rem;
+    /* rem sizing */
+    font-weight: 600;
+    width: 1.25rem;
+    height: 1.25rem;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 5px rgba(169, 29, 34, 0.3);
+}
+
+.cart-button:hover {
+    color: var(--color-primary);
+}
+
+.cart-button:hover .cart-icon {
+    transform: scale(1.1);
+}
+
+/* Hero Section */
+.hero {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    height: auto;
+    padding: 4rem 0% 0 0%;
+    text-align: center;
+    position: relative;
+    background-color: var(--color-bg);
+}
+
+/* Hero Text Content Stack */
+.hero-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 90%;
+    /* Percentage width constraint */
+    max-width: 52rem;
+    /* Limits horizontal stretch for reading comfort */
+    height: auto;
+}
+
+
+.hero-title {
+    font-family: var(--font-heading);
+    font-size: clamp(2.5rem, 5.5vw, 5.5rem);
+    /* Responsive typography using clamp() */
+    font-weight: 400;
+    line-height: 1.15;
+    /* Replaced px with standard unitless line-height for responsive typography compliance */
+    color: var(--color-text-dark);
+    margin-bottom: 2rem;
+    text-transform: uppercase;
+    letter-spacing: 0%;
+}
+
+/* CTA Buttons */
+.hero-actions {
+    display: flex;
+    justify-content: center;
+    gap: 1.5rem;
+    width: 100%;
+    height: auto;
+}
+
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1.125rem 1rem;
+    font-family: var(--font-body);
+    font-size: 1rem;
+    /* rem typography */
+    font-weight: 600;
+    border-radius: 0.5rem;
+    text-decoration: none;
+    transition: transform var(--transition-normal), background-color var(--transition-fast), border-color var(--transition-fast), box-shadow var(--transition-normal);
+    cursor: pointer;
+    line-height: 1;
+}
+
+.btn-primary {
+    background-color: var(--color-primary);
+    color: var(--color-text-light);
+    border: 2px solid var(--color-primary);
+    box-shadow: 0 4px 15px rgba(169, 29, 34, 0.2);
+}
+
+.btn-primary:hover {
+    background-color: var(--color-primary-hover);
+    border-color: var(--color-primary-hover);
+    transform: translateY(-3px);
+    box-shadow: 0 6px 20px rgba(169, 29, 34, 0.3);
+}
+
+.btn-secondary {
+    background-color: transparent;
+    color: var(--color-text-dark);
+    border: 2px solid var(--color-text-dark);
+}
+
+.btn-secondary:hover {
+    background-color: var(--color-text-dark);
+    color: var(--color-text-light);
+    transform: translateY(-3px);
+    box-shadow: 0 6px 20px rgba(26, 29, 32, 0.15);
+}
+
+/* Hero Fluid Overflow Gallery - Viewport/Container Wrapper */
+.hero-gallery-wrapper {
+    overflow: hidden;
+    width: 100%;
+    height: auto;
+    margin-top: 3.75rem;
+    /* margin-bottom: -15rem; */
+    /* Large negative margin pushes the gallery to sit halfway into the next section */
+    position: relative;
+    z-index: 10;
+}
+
+/* Scrolling Marquee Track (Parent Container of images) */
+.hero-gallery {
+    display: flex;
+    width: 200%;
+    height: auto;
+    gap: 1%;
+    /* Percentage-based flexbox gap */
+    padding-right: 1%;
+    /* Balances the final gap space for a seamless marquee loop */
+    animation: marquee 25s linear infinite;
+}
+
+/* Smooth pause on hover using animation-play-state */
+.hero-gallery:hover {
+    animation-play-state: paused;
+}
+
+/* Individual Image Items */
+.hero-gallery__item {
+    /* ADJUST: base/resting size of the images — increase/decrease this value to make the images base width larger or smaller */
+    width: 9%;
+    /* Percentage structural width: 10 items * 9% + 10 gaps * 1% = 100% of track */
+    flex-shrink: 0;
+    height: auto;
+    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+
+}
+
+/* Individual Gallery Image Sizing and Transition */
+.gallery-img {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 4 / 5;
+    /* Dynamic height calculated from width to maintain fluid layout */
+    object-fit: cover;
+    border-radius: 1.25rem;
+    /* rounded corners */
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+    /* ADJUST: speed/sharpness of the grow/shrink transition — modify this duration/easing to change the transition speed */
+}
+
+/* Center Image Pop - Grown Larger dynamically using Vanilla JS */
+.hero-gallery__item.center-focus {
+    /* ADJUST: peak size at center — increase/decrease this value to make the enlargement bigger or smaller */
+    transform: scale(1.18, 1.5);
+    box-shadow: 0 20px 40px rgba(26, 29, 32, 0.18);
+}
+
+/* Infinite Marquee Scroll Keyframes (Left to Right) */
+@keyframes marquee {
+    0% {
+        transform: translateX(-50%);
+    }
+
+    100% {
+        transform: translateX(0);
+    }
+}
+
+/* Responsive Breakpoints (Maintains Flexbox Flow) */
+@media (max-width: 1024px) {
+    .nav-links {
+        gap: 1.5rem;
+    }
+
+    .hero-gallery-wrapper {
+        margin-bottom: -12rem;
+    }
+
+    .hero-gallery {
+        width: 250%;
+        /* Scales items up proportionally for tablet */
+    }
+}
+
+@media (max-width: 768px) {
+    .header {
+        padding: 1rem 5%;
+    }
+
+    /* Responsive Navigation for mobile - standard wrap */
+    .nav-links {
+        display: none;
+        /* In a full app, this would toggle. Kept simple and semantic. */
+    }
+
+    .cart-container {
+        margin-left: 0;
+    }
+
+    .hero {
+        padding-top: 2.5rem;
+    }
+
+    .hero-title {
+        margin-bottom: 1rem;
+    }
+
+    .hero-description {
+        font-size: 1rem;
+        margin-bottom: 2rem;
+    }
+
+    .hero-gallery-wrapper {
+        margin-top: 3.5rem;
+        margin-bottom: -8rem;
+    }
+
+    .hero-gallery {
+        width: 333.33%;
+        /* Scales items up proportionally for mobile viewport */
+    }
+
+    .gallery-img {
+        border-radius: 0.75rem;
+    }
+}
