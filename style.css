@@ -1946,8 +1946,20 @@ body.store-page .header {
     font-family: var(--font-body);
     font-size: 0.95rem;
     color: var(--color-text-muted);
+    background-color: #F8F8FA;
+    width: 100vw;
+    position: relative;
+    left: 50%;
+    right: 50%;
+    margin-left: -50vw;
+    margin-right: -50vw;
+    margin-top: -2.5rem;
     margin-bottom: 2rem;
+    padding: 1rem max(5%, calc(50vw - 40rem));
+    box-sizing: border-box;
+    overflow-x: hidden;
 }
+
 
 .breadcrumb-link {
     color: var(--color-text-muted);
@@ -1978,20 +1990,17 @@ body.store-page .header {
     gap: 1.25rem;
     width: 100%;
     margin-bottom: 2.5rem;
-    /* padding-bottom: 1.25rem;
-    border-bottom: 1px solid var(--color-border); */
-    border: 1px solid #E4E7EC;
+    background-color: var(--color-bg-white);
+    border: 1px solid var(--color-border);
     padding: 0.75rem 1.25rem;
-    border-radius: 8rem;
+    border-radius: 999px;
     font-family: "Instrument Sans", sans-serif;
-
-
 }
 
 .results-count-text {
     font-size: 0.875rem;
     font-weight: 400;
-    color: #1D2739;
+    color: var(--color-text-dark);
 }
 
 .filter-controls-group {
@@ -2012,24 +2021,26 @@ body.store-page .header {
     align-items: center;
     gap: 0.75rem;
     padding: 0.65rem 1.125rem;
-    background-color: var(--color-bg-white);
-    border: 1px solid var(--color-border);
-    border-radius: 0.5rem;
+    background-color: transparent;
+    border: none;
+    border-right: 1px solid var(--color-border);
     font-family: var(--font-body);
-    font-size: 0.95rem;
-    font-weight: 500;
+    font-size: 0.875rem;
+    font-weight: 600;
     color: var(--color-text-dark);
     cursor: pointer;
-    transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+    transition: border-color var(--transition-fast), color var(--transition-fast);
 }
 
 .dropdown-toggle:hover,
 .dropdown-toggle:focus {
-    border-color: var(--color-text-dark);
+    color: var(--color-primary);
 }
 
 .dropdown-arrow {
-    transition: transform var(--transition-fast);
+    color: var(--color-text-dark);
+    stroke: var(--color-text-dark);
+    transition: transform var(--transition-fast), color var(--transition-fast), stroke var(--transition-fast);
 }
 
 .category-dropdown.active .dropdown-arrow {
@@ -2079,15 +2090,12 @@ body.store-page .header {
 .search-input-wrapper {
     display: flex;
     align-items: center;
-    background-color: var(--color-bg-white);
-    border: 1px solid var(--color-border);
-    border-radius: 0.5rem;
-    overflow: hidden;
+    background-color: transparent;
+    border: none;
+    border-radius: 0;
+    overflow: visible;
+    gap: 0.5rem;
     transition: border-color var(--transition-fast);
-}
-
-.search-input-wrapper:focus-within {
-    border-color: var(--color-text-dark);
 }
 
 .search-input {
@@ -2102,24 +2110,38 @@ body.store-page .header {
 }
 
 .search-input::placeholder {
-    color: #98A2B3;
+    color: var(--color-text-muted);
+    font-size: 0.875rem;
+    font-weight: 400;
+    line-height: 100%;
 }
 
 .search-btn {
     border: none;
-    background: transparent;
-    padding: 0.65rem 0.85rem;
-    color: var(--color-text-muted);
+    background-color: var(--color-primary);
+    color: #ffffff;
+    border-radius: 50%;
+    width: 2.25rem;
+    height: 2.25rem;
+    padding: 0;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: color var(--transition-fast);
+    transition: background-color var(--transition-fast);
+    flex-shrink: 0;
+}
+
+.search-btn svg {
+    stroke: #ffffff;
+    color: #ffffff;
 }
 
 .search-btn:hover {
-    color: var(--color-primary);
+    background-color: var(--color-primary-hover);
+    color: #ffffff;
 }
+
 
 /* ==========================================================================
    PART 3 — Store Page Image Crop Override (Scoped ONLY to .store-grid)
@@ -2132,20 +2154,74 @@ body.store-page .header {
     border-radius: 50% !important;
 }
 
-/* Load More Button Container */
-.load-more-container {
+/* Numbered Page Pagination Styling */
+.pagination-container {
     display: flex;
     justify-content: center;
+    align-items: center;
+    gap: 0.65rem;
     width: 100%;
     margin-top: 3.5rem;
-    margin-bottom: 2rem;
+    margin-bottom: 3.5rem;
 }
 
-.load-more-btn {
-    padding: 0.85rem 3rem;
-    font-size: 1.1rem;
+.pagination-btn {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    min-width: 44px;
+    height: 44px;
+    padding: 0 0.5rem;
+    border-radius: 8px;
+    border: 1px solid var(--color-border);
+    background-color: var(--color-bg-white);
+    color: var(--color-text-dark);
+    font-family: var(--font-body);
+    font-size: 1rem;
     font-weight: 600;
+    cursor: pointer;
+    transition: background-color var(--transition-fast), border-color var(--transition-fast), color var(--transition-fast);
+    user-select: none;
 }
+
+.pagination-btn:hover:not(.active):not(:disabled):not(.disabled) {
+    border-color: #3b322c;
+    background-color: #FAFAFA;
+}
+
+.pagination-btn.active {
+    background-color: #3b322c;
+    border-color: #3b322c;
+    color: #FFFFFF;
+    cursor: default;
+}
+
+.pagination-btn:disabled,
+.pagination-btn.disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    border-color: var(--color-border);
+}
+
+/* Empty State Message for Filtered Categories */
+.no-products-message {
+    grid-column: 1 / -1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 4rem 1.5rem;
+    text-align: center;
+    width: 100%;
+}
+
+.no-products-message p {
+    font-family: var(--font-body);
+    font-size: 1.1rem;
+    font-weight: 500;
+    color: var(--color-text-muted);
+}
+
+
 
 /* ==========================================================================
    PART 4 — Floating Live Cart Summary Bar
@@ -2224,6 +2300,115 @@ body.store-page .header {
         font-size: 0.925rem;
     }
 }
+
+@media (max-width: 480px) {
+
+    /* Store Page Container & Layout */
+    .store-page-wrapper {
+        padding: 1.5rem 1rem 5rem 1rem;
+    }
+
+    .store-breadcrumb {
+        margin-top: -1.5rem;
+        margin-bottom: 1.25rem;
+        font-size: 0.875rem;
+        padding: 0.75rem 1rem;
+    }
+
+
+    /* Filter & Search Bar Mobile Stacking */
+    .store-filter-bar {
+        flex-direction: column;
+        align-items: stretch;
+        width: 100%;
+        padding: 1rem;
+        border-radius: 1rem;
+        gap: 0.85rem;
+        margin-bottom: 1.75rem;
+    }
+
+    .results-count-container {
+        width: 100%;
+    }
+
+    .results-count-text {
+        font-size: 0.85rem;
+    }
+
+    .filter-controls-group {
+        flex-direction: column;
+        width: 100%;
+        gap: 0.75rem;
+        align-items: stretch;
+    }
+
+    .category-dropdown,
+    .search-input-wrapper {
+        width: 100%;
+    }
+
+    .dropdown-toggle {
+        width: 100%;
+        justify-content: space-between;
+    }
+
+    .search-input {
+        width: 100%;
+        flex: 1;
+    }
+
+    /* Pagination Mobile Fit */
+    .pagination-container {
+        margin-top: 2.5rem;
+        margin-bottom: 4rem;
+        gap: 0.4rem;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    .pagination-btn {
+        min-width: 38px;
+        height: 38px;
+        padding: 0 0.35rem;
+        font-size: 0.9rem;
+        border-radius: 6px;
+    }
+
+    /* Floating Cart Summary Bar Mobile Sizing */
+    .floating-cart-bar {
+        bottom: 1.25rem;
+        width: 90%;
+        max-width: 26rem;
+        padding: 0.75rem 1.25rem;
+        justify-content: space-between;
+        gap: 0.75rem;
+    }
+
+    .floating-cart-info,
+    .floating-cart-link {
+        font-size: 0.875rem;
+    }
+
+    /* Right-Side Cart Review Drawer Mobile Full-Width Takeover */
+    .cart-drawer {
+        width: 100%;
+        max-width: 100%;
+    }
+
+    .cart-drawer__header {
+        padding: 1.25rem 1.25rem 1rem 1.25rem;
+    }
+
+    .cart-drawer__body {
+        padding: 0 1.25rem 1.25rem 1.25rem;
+    }
+
+    .cart-drawer__form-row {
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+}
+
 
 /* ==========================================
    Right-Side Cart Review Drawer System
@@ -2482,4 +2667,64 @@ body.cart-drawer-open {
 .cart-drawer__send-btn:disabled {
     opacity: 0.5;
     cursor: not-allowed;
+}
+
+/* Product Grid Skeleton Loading State */
+.product-card-skeleton {
+    background: #ffffff;
+    border-radius: 16px;
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    border: 1px solid rgba(0, 0, 0, 0.06);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+.skeleton-image {
+    width: 100%;
+    aspect-ratio: 1;
+    border-radius: 12px;
+    background: linear-gradient(90deg, #f0f2f5 25%, #e2e8f0 50%, #f0f2f5 75%);
+    background-size: 200% 100%;
+    animation: skeleton-shimmer 1.5s infinite ease-in-out;
+}
+
+.skeleton-line {
+    height: 14px;
+    border-radius: 4px;
+    background: linear-gradient(90deg, #f0f2f5 25%, #e2e8f0 50%, #f0f2f5 75%);
+    background-size: 200% 100%;
+    animation: skeleton-shimmer 1.5s infinite ease-in-out;
+}
+
+.skeleton-line.title {
+    width: 75%;
+    height: 18px;
+}
+
+.skeleton-line.desc {
+    width: 90%;
+}
+
+.skeleton-line.price {
+    width: 40%;
+    height: 16px;
+    margin-top: 0.25rem;
+}
+
+.skeleton-line.btn {
+    width: 100%;
+    height: 38px;
+    border-radius: 8px;
+    margin-top: 0.5rem;
+}
+
+@keyframes skeleton-shimmer {
+    0% {
+        background-position: 200% 0;
+    }
+    100% {
+        background-position: -200% 0;
+    }
 }

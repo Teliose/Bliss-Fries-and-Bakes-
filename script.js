@@ -135,7 +135,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
             const eventLabel = eventLabelMap[currentEventType] || currentEventType;
 
-            const message = `Hello Bliss Kitchen! 🍰\n\nI would like to inquire about booking: *${eventLabel}*\n\n*My Details:*\n• Name: ${name}\n• Phone: ${phone}\n• Celebration Date: ${date}\n\n*Imagination / Notes:*\n${description}\n\nThank you!`;
+            const message = `Hello Bliss Fries and Bakes! 🍰\n\nI would like to inquire about booking: *${eventLabel}*\n\n*My Details:*\n• Name: ${name}\n• Phone: ${phone}\n• Celebration Date: ${date}\n\n*Imagination / Notes:*\n${description}\n\nThank you!`;
 
             const encodedMessage = encodeURIComponent(message);
             const whatsappUrl = `https://wa.me/${WHATSAPP_PHONE_NUMBER}?text=${encodedMessage}`;
@@ -195,16 +195,57 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // ==========================================
     // Persistent LocalStorage Cart Module & Live Floating Bar
+    // (Data shape: { lastUpdated: timestamp, items: { [productId]: qty } })
     // ==========================================
+    const CART_EXPIRY_MS = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
     let cart = {};
-    try {
-        const savedCart = localStorage.getItem("blissKitchenCart");
-        if (savedCart) {
-            cart = JSON.parse(savedCart);
+
+    function clearCartStorage() {
+        cart = {};
+        try {
+            localStorage.removeItem("blissFriesAndBakesCart");
+        } catch (e) {
+            console.error("Failed to clear cart from localStorage", e);
         }
-    } catch (e) {
-        console.error("Failed to load cart from localStorage", e);
     }
+
+    /**
+     * Reads cart from localStorage and enforces 24-hour expiration window.
+     * Also provides backward compatibility by invalidating legacy un-wrapped cart objects.
+     */
+    function loadCartFromStorage() {
+        try {
+            const savedRaw = localStorage.getItem("blissFriesAndBakesCart");
+            if (savedRaw) {
+                const parsed = JSON.parse(savedRaw);
+                if (
+                    parsed &&
+                    typeof parsed === "object" &&
+                    typeof parsed.lastUpdated === "number" &&
+                    parsed.items &&
+                    typeof parsed.items === "object"
+                ) {
+                    const age = Date.now() - parsed.lastUpdated;
+                    if (age > CART_EXPIRY_MS) {
+                        clearCartStorage();
+                    } else {
+                        cart = parsed.items;
+                    }
+                } else {
+                    // Legacy flat object or invalid shape -> treat as expired & clear
+                    clearCartStorage();
+                }
+            } else {
+                cart = {};
+            }
+        } catch (e) {
+            console.error("Failed to load cart from localStorage", e);
+            cart = {};
+        }
+    }
+
+    // Initial cart load with timestamp/expiry check
+    loadCartFromStorage();
 
     const badge = document.querySelector(".cart-badge");
     const floatingCartBar = document.getElementById("floating-cart-bar");
@@ -234,8 +275,9 @@ document.addEventListener("DOMContentLoaded", () => {
                 let unitPrice = 0;
 
                 // Priority lookup against products dataset
-                if (typeof products !== "undefined" && Array.isArray(products)) {
-                    const item = products.find(p => p.id === id);
+                const productsData = window.products || (typeof products !== "undefined" && Array.isArray(products) ? products : []);
+                if (Array.isArray(productsData)) {
+                    const item = productsData.find(p => p.id === id);
                     if (item) unitPrice = item.price;
                 }
 
@@ -284,9 +326,17 @@ document.addEventListener("DOMContentLoaded", () => {
         document.querySelectorAll(".product-card").forEach(updateCardUI);
     }
 
+    /**
+     * Saves cart to localStorage under timestamped wrapper { lastUpdated, items }
+     * and refreshes active UI components.
+     */
     function saveCart() {
+        const cartData = {
+            lastUpdated: Date.now(),
+            items: cart
+        };
         try {
-            localStorage.setItem("blissKitchenCart", JSON.stringify(cart));
+            localStorage.setItem("blissFriesAndBakesCart", JSON.stringify(cartData));
         } catch (e) {
             console.error("Failed to save cart to localStorage", e);
         }
@@ -296,6 +346,21 @@ document.addEventListener("DOMContentLoaded", () => {
             renderCartDrawer();
         }
     }
+
+    /**
+     * Resets cart to empty state across UI and localStorage after WhatsApp order handoff.
+     */
+    function resetCartAfterOrder() {
+        clearCartStorage();
+        updateCartBadge();
+        updateAllCardsUI();
+        updateFloatingCartBar();
+        if (typeof renderCartDrawer === "function") {
+            renderCartDrawer();
+        }
+        closeCartDrawer();
+    }
+
 
     // ==========================================
     // PART 5 — Event Delegation for Cart Controls
@@ -348,14 +413,90 @@ document.addEventListener("DOMContentLoaded", () => {
     updateFloatingCartBar();
 
     // ==========================================
-    // Store Page Grid Rendering & "Load More" Pagination
+    // Store Page & Homepage Featured Grid Rendering, Pagination & Filtering
     // ==========================================
     const storeGrid = document.getElementById("store-grid");
-    const loadMoreBtn = document.getElementById("load-more-btn");
+    const picksGrid = document.getElementById("order");
+    const paginationContainer = document.getElementById("pagination-container");
     const resultsCountText = document.getElementById("results-count");
 
-    let displayedProductCount = 0;
-    const BATCH_SIZE = 12;
+    const ITEMS_PER_PAGE = 12;
+    let currentPage = 1;
+    let currentCategory = "All";
+    let currentSearchQuery = "";
+    let currentFilteredProducts = [];
+
+    const FEATURED_PRODUCT_IDS = [
+        "jollof-rice",
+        "the-ultimate-grill-small-chops-box",
+        "meat-pie",
+        "nkwobi",
+        "blizo-premium-blend",
+        "chips-wih-grilled-chicken",
+        "blizo-fruit-punch",
+        "peppered-fish-yam-fries"
+    ];
+
+    function getProductsDataset() {
+        if (window.products && Array.isArray(window.products)) {
+            return window.products;
+        }
+        if (typeof products !== "undefined" && Array.isArray(products)) {
+            return products;
+        }
+        return [];
+    }
+
+    function renderHomepageFeaturedCards(productsData) {
+        if (!picksGrid || !Array.isArray(productsData) || productsData.length === 0) return;
+
+        const featuredProducts = FEATURED_PRODUCT_IDS
+            .map(id => productsData.find(p => p.id === id))
+            .filter(Boolean);
+
+        if (featuredProducts.length > 0) {
+            picksGrid.innerHTML = featuredProducts.map(createProductCardHTML).join("");
+        }
+    }
+
+    /**
+     * Filters products based on combined active category and search query (AND logic).
+     * @param {string} [category] - Optional category filter value
+     * @param {string} [searchQuery] - Optional search query string
+     */
+    function filterProducts(category, searchQuery) {
+        if (category !== undefined) {
+            currentCategory = category || "All";
+        }
+        if (searchQuery !== undefined) {
+            currentSearchQuery = searchQuery !== null ? searchQuery : "";
+        }
+
+        const productsData = getProductsDataset();
+        const trimmedQuery = currentSearchQuery.trim().toLowerCase();
+        const isCategoryFiltered = currentCategory && currentCategory !== "All" && currentCategory !== "All Categories";
+
+        if (Array.isArray(productsData) && productsData.length > 0) {
+            currentFilteredProducts = productsData.filter(product => {
+                // 1. Category match
+                const matchesCategory = !isCategoryFiltered || product.category === currentCategory;
+
+                // 2. Search query match against title OR description (case-insensitive)
+                let matchesSearch = true;
+                if (trimmedQuery.length > 0) {
+                    const titleMatch = (product.title || "").toLowerCase().includes(trimmedQuery);
+                    const descMatch = (product.description || "").toLowerCase().includes(trimmedQuery);
+                    matchesSearch = titleMatch || descMatch;
+                }
+
+                return matchesCategory && matchesSearch;
+            });
+        } else {
+            currentFilteredProducts = [];
+        }
+
+        renderPage(1, false);
+    }
 
     function createProductCardHTML(product) {
         return `
@@ -378,44 +519,150 @@ document.addEventListener("DOMContentLoaded", () => {
         `;
     }
 
-    function renderNextBatch() {
-        if (!storeGrid || typeof products === "undefined" || !Array.isArray(products)) return;
+    function scrollToGridTop() {
+        if (!storeGrid) return;
+        const headerOffset = 120;
+        const elementPosition = storeGrid.getBoundingClientRect().top;
+        const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
 
-        const nextBatch = products.slice(displayedProductCount, displayedProductCount + BATCH_SIZE);
-        if (nextBatch.length === 0) return;
-
-        const tempDiv = document.createElement("div");
-        tempDiv.innerHTML = nextBatch.map(createProductCardHTML).join("");
-
-        while (tempDiv.firstChild) {
-            storeGrid.appendChild(tempDiv.firstChild);
-        }
-
-        displayedProductCount += nextBatch.length;
-
-        if (resultsCountText) {
-            resultsCountText.textContent = `Showing 1-${displayedProductCount} of ${products.length} results`;
-        }
-
-        if (displayedProductCount >= products.length && loadMoreBtn) {
-            loadMoreBtn.style.display = "none";
-        }
-
-        updateAllCardsUI();
-    }
-
-    if (storeGrid) {
-        renderNextBatch(); // Load initial batch of 12
-    }
-
-    if (loadMoreBtn) {
-        loadMoreBtn.addEventListener("click", () => {
-            renderNextBatch();
+        window.scrollTo({
+            top: Math.max(0, offsetPosition),
+            behavior: "smooth"
         });
     }
 
+    function renderPage(page, shouldScroll = false) {
+        if (!storeGrid) return;
+
+        const totalProducts = currentFilteredProducts.length;
+        const totalPages = Math.ceil(totalProducts / ITEMS_PER_PAGE);
+
+        if (totalProducts === 0) {
+            currentPage = 1;
+
+            const isCategoryActive = currentCategory && currentCategory !== "All" && currentCategory !== "All Categories";
+            const cleanSearchQuery = currentSearchQuery.trim();
+            const isSearchActive = cleanSearchQuery.length > 0;
+
+            let messageText = "No products found";
+            if (isCategoryActive && isSearchActive) {
+                messageText = `No products found for "${cleanSearchQuery}" in ${currentCategory}`;
+            } else if (isCategoryActive) {
+                messageText = `No products found in ${currentCategory}`;
+            } else if (isSearchActive) {
+                messageText = `No products found for "${cleanSearchQuery}"`;
+            }
+
+            storeGrid.innerHTML = `
+                <div class="no-products-message">
+                    <p>${messageText}</p>
+                </div>
+            `;
+            if (resultsCountText) {
+                resultsCountText.textContent = "Showing 0-0 of 0 results";
+            }
+            if (paginationContainer) {
+                paginationContainer.innerHTML = "";
+            }
+            return;
+        }
+
+        if (page < 1) page = 1;
+        if (page > totalPages) page = totalPages;
+        currentPage = page;
+
+        const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+        const endIndex = Math.min(startIndex + ITEMS_PER_PAGE, totalProducts);
+        const currentProducts = currentFilteredProducts.slice(startIndex, endIndex);
+
+        storeGrid.innerHTML = currentProducts.map(createProductCardHTML).join("");
+
+        if (resultsCountText) {
+            resultsCountText.textContent = `Showing ${startIndex + 1}-${endIndex} of ${totalProducts} results`;
+        }
+
+        updateAllCardsUI();
+        renderPaginationControls(totalPages);
+
+        if (shouldScroll) {
+            scrollToGridTop();
+        }
+    }
+
+    function renderPaginationControls(totalPages) {
+        if (!paginationContainer) return;
+
+        if (totalPages <= 0) {
+            paginationContainer.innerHTML = "";
+            return;
+        }
+
+        let html = "";
+
+        for (let i = 1; i <= totalPages; i++) {
+            const isActive = i === currentPage;
+            html += `<button type="button" class="pagination-btn ${isActive ? 'active' : ''}" data-page="${i}" aria-label="Page ${i}" ${isActive ? 'aria-current="page"' : ''}>${i}</button>`;
+        }
+
+        if (totalPages > 1) {
+            const isLastPage = currentPage === totalPages;
+            html += `<button type="button" class="pagination-btn pagination-next ${isLastPage ? 'disabled' : ''}" data-page="next" aria-label="Next page" ${isLastPage ? 'disabled' : ''}>»</button>`;
+        }
+
+        paginationContainer.innerHTML = html;
+    }
+
+    if (paginationContainer) {
+        paginationContainer.addEventListener("click", (e) => {
+            const btn = e.target.closest(".pagination-btn");
+            if (!btn || btn.disabled || btn.classList.contains("disabled")) return;
+
+            const pageAttr = btn.getAttribute("data-page");
+            let targetPage = currentPage;
+
+            if (pageAttr === "next") {
+                targetPage = currentPage + 1;
+            } else {
+                targetPage = parseInt(pageAttr, 10);
+            }
+
+            if (targetPage !== currentPage) {
+                renderPage(targetPage, true);
+            }
+        });
+    }
+
+    function initializeProductsUI(productsData) {
+        const dataset = productsData || getProductsDataset();
+        window.products = dataset;
+
+        if (picksGrid) {
+            renderHomepageFeaturedCards(dataset);
+        }
+
+        if (storeGrid) {
+            currentFilteredProducts = [...dataset];
+            filterProducts(currentCategory, currentSearchQuery);
+        }
+
+        updateCartBadge();
+        updateAllCardsUI();
+        updateFloatingCartBar();
+    }
+
+    if (window.productsPromise) {
+        window.productsPromise.then(loadedProducts => {
+            initializeProductsUI(loadedProducts);
+        }).catch(err => {
+            console.error("Products loader promise rejected:", err);
+            initializeProductsUI(getProductsDataset());
+        });
+    } else {
+        initializeProductsUI(getProductsDataset());
+    }
+
     // ==========================================
-    // Category Dropdown Toggle & Selection (Visual Only for this pass)
+    // Category Dropdown Toggle & Selection Filtering
     // ==========================================
     const categoryDropdown = document.getElementById("category-dropdown");
     const dropdownToggle = document.getElementById("dropdown-toggle");
@@ -454,10 +701,50 @@ document.addEventListener("DOMContentLoaded", () => {
 
                 categoryDropdown.classList.remove("active");
                 dropdownToggle.setAttribute("aria-expanded", "false");
-                // Code note: Category filter logic is ready to be connected here in a future pass
+
+                const selectedCategory = option.getAttribute("data-category");
+                filterProducts(selectedCategory, undefined);
             });
         });
     }
+
+    // ==========================================
+    // Live Search Input Filtering & Debounce
+    // ==========================================
+    const storeSearchInput = document.getElementById("store-search-input");
+    const storeSearchBtn = document.getElementById("store-search-btn");
+
+    if (storeSearchInput) {
+        let searchDebounceTimer = null;
+
+        storeSearchInput.addEventListener("input", (e) => {
+            const query = e.target.value;
+            if (searchDebounceTimer) {
+                clearTimeout(searchDebounceTimer);
+            }
+            searchDebounceTimer = setTimeout(() => {
+                filterProducts(undefined, query);
+            }, 180);
+        });
+
+        storeSearchInput.addEventListener("keydown", (e) => {
+            if (e.key === "Enter") {
+                e.preventDefault();
+                if (searchDebounceTimer) {
+                    clearTimeout(searchDebounceTimer);
+                }
+                filterProducts(undefined, storeSearchInput.value);
+            }
+        });
+    }
+
+    if (storeSearchBtn && storeSearchInput) {
+        storeSearchBtn.addEventListener("click", (e) => {
+            e.preventDefault();
+            filterProducts(undefined, storeSearchInput.value);
+        });
+    }
+
 
     // ==========================================
     // Cart Review Drawer Module
@@ -494,8 +781,9 @@ document.addEventListener("DOMContentLoaded", () => {
                 let title = id;
                 let price = 0;
 
-                if (typeof products !== "undefined" && Array.isArray(products)) {
-                    const item = products.find(p => p.id === id);
+                const productsData = window.products || (typeof products !== "undefined" && Array.isArray(products) ? products : []);
+                if (Array.isArray(productsData)) {
+                    const item = productsData.find(p => p.id === id);
                     if (item) {
                         title = item.title;
                         price = item.price;
@@ -519,7 +807,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         const itemsBlock = itemLines.length > 0 ? itemLines.join("\n") : "[No items in cart]";
 
-        const formattedMessage = `Hi Bliss Kitchen 👋 I'd like to place an order:
+        const formattedMessage = `Hi Bliss Fries and Bakes 👋 I'd like to place an order:
 
 ${itemsBlock}
 
@@ -556,8 +844,9 @@ Please confirm total & delivery fee. Thank you!`;
                 let title = id;
                 let price = 0;
 
-                if (typeof products !== "undefined" && Array.isArray(products)) {
-                    const item = products.find(p => p.id === id);
+                const productsData = window.products || (typeof products !== "undefined" && Array.isArray(products) ? products : []);
+                if (Array.isArray(productsData)) {
+                    const item = productsData.find(p => p.id === id);
                     if (item) {
                         title = item.title;
                         price = item.price;
@@ -607,6 +896,12 @@ Please confirm total & delivery fee. Thank you!`;
 
     function openCartDrawer() {
         if (!cartDrawer) return;
+        // Verify cart 24h expiry before opening drawer
+        loadCartFromStorage();
+        updateCartBadge();
+        updateAllCardsUI();
+        updateFloatingCartBar();
+
         renderCartDrawer();
         cartDrawer.classList.add("active");
         document.body.classList.add("cart-drawer-open");
@@ -665,6 +960,10 @@ Please confirm total & delivery fee. Thank you!`;
             const message = buildWhatsAppMessage();
             const whatsappUrl = `https://wa.me/${WHATSAPP_PHONE_NUMBER}?text=${encodeURIComponent(message)}`;
             window.open(whatsappUrl, "_blank");
+
+            // Clear cart & update UI across page after sending order
+            resetCartAfterOrder();
         });
     }
+
 });

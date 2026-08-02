@@ -77,7 +77,7 @@
             <!-- Results & Filter Bar -->
             <div class="store-filter-bar">
                 <div class="results-count-container">
-                    <span id="results-count" class="results-count-text">Showing 1-12 of 40
+                    <span id="results-count" class="results-count-text">Showing 1-12 of 53
                         results</span>
                 </div>
                 <div class="filter-controls-group">
@@ -93,16 +93,12 @@
                             </svg>
                         </button>
                         <ul class="dropdown-menu" id="dropdown-menu" role="listbox">
-                            <li class="dropdown-option active" role="option" data-category="All">All
-                                Categories</li>
-                            <li class="dropdown-option" role="option" data-category="Everyday Nigerian dishes">Everyday
-                                Nigerian dishes</li>
-                            <li class="dropdown-option" role="option" data-category="Soups & Sides">
-                                Soups & Sides</li>
-                            <li class="dropdown-option" role="option" data-category="Cakes">Cakes</li>
-                            <li class="dropdown-option" role="option" data-category="Pastries & Snacks">
-                                Pastries & Snacks</li>
-                            <li class="dropdown-option" role="option" data-category="Drinks">Drinks</li>
+                            <li class="dropdown-option active" role="option" data-category="All">All Categories</li>
+                            <li class="dropdown-option" role="option" data-category="Breakfast and Quick Meals">Breakfast and Quick Meals</li>
+                            <li class="dropdown-option" role="option" data-category="Crispy Fries">Crispy Fries</li>
+                            <li class="dropdown-option" role="option" data-category="Local Delicacies">Local Delicacies</li>
+                            <li class="dropdown-option" role="option" data-category="Snacks &amp; Bakes">Snacks &amp; Bakes</li>
+                            <li class="dropdown-option" role="option" data-category="Drinks, Parfaits &amp; Refreshment">Drinks, Parfaits &amp; Refreshment</li>
                         </ul>
                     </div>
 
@@ -124,13 +120,24 @@
 
             <!-- Store Product Grid (Scoped class .store-grid applies circle crop override) -->
             <div id="store-grid" class="picks-grid store-grid">
-                <!-- First 12 products rendered dynamically from products.js -->
+                <!-- Skeleton Loading Placeholders -->
+                <div class="product-card-skeleton"><div class="skeleton-image"></div><div class="skeleton-line title"></div><div class="skeleton-line desc"></div><div class="skeleton-line price"></div><div class="skeleton-line btn"></div></div>
+                <div class="product-card-skeleton"><div class="skeleton-image"></div><div class="skeleton-line title"></div><div class="skeleton-line desc"></div><div class="skeleton-line price"></div><div class="skeleton-line btn"></div></div>
+                <div class="product-card-skeleton"><div class="skeleton-image"></div><div class="skeleton-line title"></div><div class="skeleton-line desc"></div><div class="skeleton-line price"></div><div class="skeleton-line btn"></div></div>
+                <div class="product-card-skeleton"><div class="skeleton-image"></div><div class="skeleton-line title"></div><div class="skeleton-line desc"></div><div class="skeleton-line price"></div><div class="skeleton-line btn"></div></div>
+                <div class="product-card-skeleton"><div class="skeleton-image"></div><div class="skeleton-line title"></div><div class="skeleton-line desc"></div><div class="skeleton-line price"></div><div class="skeleton-line btn"></div></div>
+                <div class="product-card-skeleton"><div class="skeleton-image"></div><div class="skeleton-line title"></div><div class="skeleton-line desc"></div><div class="skeleton-line price"></div><div class="skeleton-line btn"></div></div>
+                <div class="product-card-skeleton"><div class="skeleton-image"></div><div class="skeleton-line title"></div><div class="skeleton-line desc"></div><div class="skeleton-line price"></div><div class="skeleton-line btn"></div></div>
+                <div class="product-card-skeleton"><div class="skeleton-image"></div><div class="skeleton-line title"></div><div class="skeleton-line desc"></div><div class="skeleton-line price"></div><div class="skeleton-line btn"></div></div>
+                <div class="product-card-skeleton"><div class="skeleton-image"></div><div class="skeleton-line title"></div><div class="skeleton-line desc"></div><div class="skeleton-line price"></div><div class="skeleton-line btn"></div></div>
+                <div class="product-card-skeleton"><div class="skeleton-image"></div><div class="skeleton-line title"></div><div class="skeleton-line desc"></div><div class="skeleton-line price"></div><div class="skeleton-line btn"></div></div>
+                <div class="product-card-skeleton"><div class="skeleton-image"></div><div class="skeleton-line title"></div><div class="skeleton-line desc"></div><div class="skeleton-line price"></div><div class="skeleton-line btn"></div></div>
+                <div class="product-card-skeleton"><div class="skeleton-image"></div><div class="skeleton-line title"></div><div class="skeleton-line desc"></div><div class="skeleton-line price"></div><div class="skeleton-line btn"></div></div>
             </div>
 
-            <!-- Load More Button -->
-            <div class="load-more-container">
-                <button type="button" id="load-more-btn" class="btn btn-secondary load-more-btn">Load
-                    More</button>
+            <!-- Pagination Navigation Container -->
+            <div id="pagination-container" class="pagination-container" aria-label="Pagination Navigation">
+                <!-- Page buttons rendered dynamically via script.js -->
             </div>
         </div>
     </main>
@@ -207,7 +214,7 @@
 
         <div class="footer-bottom">
             <p class="footer-copyright">
-                <span class="copyright-icon">&copy;</span>2026 Bliss Kitchen. All rights reserved.
+                <span class="copyright-icon">&copy;</span>2026 Bliss Fries and Bakes. All rights reserved.
             </p>
         </div>
     </footer>
@@ -219,7 +226,8 @@
                 <h2 class="cart-drawer__title">YOUR ORDER</h2>
                 <p class="cart-drawer__subtitle">Review it, add your details, then send.</p>
             </div>
-            <button type="button" id="cart-drawer-close" class="cart-drawer__close-btn" aria-label="Close cart">&times;</button>
+            <button type="button" id="cart-drawer-close" class="cart-drawer__close-btn"
+                aria-label="Close cart">&times;</button>
         </div>
 
         <div class="cart-drawer__body">
@@ -237,7 +245,7 @@
             <!-- Customer Details Form -->
             <div class="cart-drawer__details-section">
                 <h3 class="cart-drawer__section-title">YOUR DETAIL</h3>
-                
+
                 <div class="cart-drawer__form-group">
                     <label for="cart-drawer-name" class="cart-drawer__label">Name</label>
                     <input type="text" id="cart-drawer-name" class="cart-drawer__input" placeholder="Full name">
@@ -250,7 +258,8 @@
                     </div>
                     <div class="cart-drawer__form-group">
                         <label for="cart-drawer-delivery" class="cart-drawer__label">Delivery Area</label>
-                        <input type="text" id="cart-drawer-delivery" class="cart-drawer__input" placeholder="eg Abule Egba bus stop">
+                        <input type="text" id="cart-drawer-delivery" class="cart-drawer__input"
+                            placeholder="eg Abule Egba bus stop">
                     </div>
                 </div>
 
@@ -263,7 +272,8 @@
             <!-- Live Message Preview Box -->
             <div class="cart-drawer__preview-container">
                 <div class="cart-drawer__preview-header">
-                    <svg class="cart-drawer__preview-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <svg class="cart-drawer__preview-icon" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
                     </svg>
                     <span>What we'll send to WhatsApp</span>
@@ -280,8 +290,12 @@
         </div>
     </div>
 
-    <!-- Shared Product Dataset -->
+    <!-- PapaParse CSV Parser CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+    <!-- Shared Product Dataset (Static Fallback) -->
     <script src="products.js"></script>
+    <!-- Live Product Data Loader Module -->
+    <script src="products-loader.js"></script>
     <!-- Application Logic & Cart Module -->
     <script src="script.js"></script>
 </body>
