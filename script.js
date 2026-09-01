@@ -966,4 +966,41 @@ Please confirm total & delivery fee. Thank you!`;
         });
     }
 
+    // ==========================================
+    // Contact Us Form Submission Handler
+    // ==========================================
+    const contactForm = document.getElementById("contact-form");
+    if (contactForm) {
+        contactForm.addEventListener("submit", (e) => {
+            e.preventDefault();
+
+            const nameInput = document.getElementById("contact-name");
+            const topicSelect = document.getElementById("contact-topic");
+            const reachInput = document.getElementById("contact-reach");
+            const messageTextarea = document.getElementById("contact-message");
+
+            const name = nameInput ? nameInput.value.trim() : "";
+            const topic = topicSelect ? topicSelect.value : "General question";
+            const reach = reachInput ? reachInput.value.trim() : "";
+            const message = messageTextarea ? messageTextarea.value.trim() : "";
+
+            if (!message) {
+                if (messageTextarea) {
+                    messageTextarea.focus();
+                }
+                return;
+            }
+
+            const formattedName = name || "[not provided]";
+            const formattedReach = reach || "[not provided]";
+
+            const text = `Hi Bliss Fries and Bakes 👋\n${topic}\n\nName: ${formattedName}\nReach me at: ${formattedReach}\n\nMessage:\n${message}`;
+
+            const encodedMessage = encodeURIComponent(text);
+            const whatsappUrl = `https://wa.me/${WHATSAPP_PHONE_NUMBER}?text=${encodedMessage}`;
+
+            window.open(whatsappUrl, "_blank");
+        });
+    }
+
 });
