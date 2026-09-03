@@ -1705,8 +1705,10 @@ body {
 /* Footer Bottom Separator & Copyright */
 .footer-bottom {
     display: flex;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
+    gap: 0.5rem;
     width: 100%;
     height: auto;
     padding-top: 2.5rem;
@@ -1722,7 +1724,17 @@ body {
     color: rgba(251, 234, 233, 0.65);
     display: flex;
     align-items: center;
+    justify-content: center;
     line-height: 1;
+}
+
+.footer-designer {
+    font-family: var(--font-body);
+    font-size: 0.8rem;
+    color: rgba(251, 234, 233, 0.4);
+    text-align: center;
+    line-height: 1.2;
+    margin: 0;
 }
 
 .copyright-icon {
@@ -2150,6 +2162,42 @@ body.modal-open {
 
     .testimonial-card {
         width: 100%;
+    }
+
+    /* Contact Us Section Mobile Layout */
+    .contact-section {
+        padding: 2.5rem 1.25rem;
+    }
+
+    .contact-container {
+        flex-direction: column;
+        gap: 2.5rem;
+        width: 100%;
+    }
+
+    .contact-info-col {
+        width: 100%;
+        flex: none;
+    }
+
+    .contact-heading {
+        text-align: center;
+        margin-bottom: 1.25rem;
+    }
+
+    .contact-subtext {
+        text-align: center;
+        margin-bottom: 2rem;
+    }
+
+    .contact-hours-block {
+        max-width: 100%;
+    }
+
+    .contact-form-card {
+        width: 100%;
+        flex: none;
+        padding: 2rem 1.25rem;
     }
 
     /* Footer Section Mobile Layout */
