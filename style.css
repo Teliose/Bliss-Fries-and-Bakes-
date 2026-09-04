@@ -1725,6 +1725,11 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
+    gap: 0.5rem;
+    line-height: 1;
+}
+
+.copyright-text {
     line-height: 1;
 }
 
@@ -1747,8 +1752,8 @@ body {
     border-radius: 50%;
     font-size: 0.75rem;
     font-weight: 600;
-    margin-right: 0.5rem;
     line-height: 1;
+    flex-shrink: 0;
 }
 
 /* ==========================================
@@ -2218,6 +2223,10 @@ body.modal-open {
         text-align: center;
     }
 
+    .footer-slogan {
+        text-align: center;
+    }
+
     .footer-socials {
         justify-content: center;
     }
@@ -2228,8 +2237,43 @@ body.modal-open {
         text-align: center;
     }
 
+    .footer-column-title {
+        text-align: center;
+    }
+
     .footer-links-list {
         align-items: center;
+        text-align: center;
+        width: 100%;
+    }
+
+    .footer-link-item {
+        text-align: center;
+    }
+
+    .footer-bottom {
+        align-items: center;
+        text-align: center;
+    }
+
+    .footer-copyright {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        width: 100%;
+        text-align: center;
+        font-size: 0.85rem;
+        line-height: 1.2;
+    }
+
+    .copyright-icon {
+        flex-shrink: 0;
+        margin-right: 0;
+    }
+
+    .copyright-text {
+        text-align: center;
     }
 }
 
