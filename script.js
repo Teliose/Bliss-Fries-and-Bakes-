@@ -1000,6 +1000,13 @@ Please confirm total & delivery fee. Thank you!`;
             const whatsappUrl = `https://wa.me/${WHATSAPP_PHONE_NUMBER}?text=${encodedMessage}`;
 
             window.open(whatsappUrl, "_blank");
+
+            // Reset all form fields back to empty/default state
+            contactForm.reset();
+            if (nameInput) nameInput.value = "";
+            if (topicSelect) topicSelect.value = "General question";
+            if (reachInput) reachInput.value = "";
+            if (messageTextarea) messageTextarea.value = "";
         });
     }
 
